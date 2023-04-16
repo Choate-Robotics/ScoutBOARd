@@ -6,7 +6,7 @@ import {ChartTool, TrendGraph} from "./charts/ChartTool";
 import WiredBoar from "../assets/WiredBoar.png";
 import compileData from "../library/dataCompiler";
 import BarChart from "./charts/BarChart";
-function header() {
+function Header({onButton}) {
   return (
     <header>
       <div className="header-divisions">
@@ -17,10 +17,10 @@ function header() {
           <h2>Scout Grapher</h2>
         </div>
         <div className="header-divisions-buttons">
-          <button className="header-division-button">Teams</button>
-          <button className="header-division-button">Graph</button>
-          <button className="header-division-button">Compare</button>
-          <button className="header-division-button">Pick Lists</button>
+          <button value={"Teams"} onClick={onButton} className="header-division-button">Teams</button>
+          <button value={"Graph"} onClick={onButton} className="header-division-button">Graph</button>
+          <button value={"Compare"} onClick={onButton} className="header-division-button">Compare</button>
+          <button value={"Lists"} onClick={onButton} className="header-division-button">Pick Lists</button>
         </div>
       </div>
     </header>
@@ -74,8 +74,8 @@ function AutoGraph({ team }) {
   const total = ["TotalAuto"];
   return (
     <div className="charts-wrapper">
-      <ChartTool team={team} labels={autos} chartType={"radar"} />
-      <ChartTool team={team} labels={total} chartType={"bar"} />
+      <ChartTool team={team} labels={autos} chartType={"radar"}/>
+      <ChartTool team={team} labels={total} chartType={"bar"}/>
     </div>
   );
 }
@@ -93,8 +93,8 @@ function TeleGraph({ team }) {
   const total = ["TotalTele"];
   return (
     <div className="charts-wrapper">
-      <ChartTool team={team} labels={tele} chartType={"radar"} />
-      <ChartTool team={team} labels={total} chartType={"bar"} />
+      <ChartTool team={team} labels={tele} chartType={"radar"}/>
+      <ChartTool team={team} labels={total} chartType={"bar"}/>
     </div>
   );
 }                  
@@ -102,12 +102,11 @@ function TeleGraph({ team }) {
 
 function EndGraph({ team }) {
   const end = ["Charging Station"];
-  const trend = ["TotalAuto", "TotalTele", "Charging Station"]
+  const trend = ["TotalAuto", "TotalTele", "Charging Station", "TotalPieces"]
   return (
     <div className="charts-wrapper">
         <ChartTool team={team} labels={end} chartType={"bar"} />
-        <h3>Match Trend:</h3>
-        <TrendGraph team={team} label={"Match Num"} targets={trend}/>
+        <TrendGraph team={team} label={"Match Num"} targets={trend} title={"Total Trend"}/>
     </div>
     );
 }
@@ -128,7 +127,7 @@ function TeamPage() {
   return (
     <div className="team-page">
       <div className="team-page-list">
-        <h2>Team Data: {team}</h2>
+        <h2>Team: {team}</h2>
         <TeamList onTeam={onTeamSelect} />
       </div>
       <div className="team-page-graph">
@@ -149,19 +148,49 @@ function TeamPage() {
   );
 }
 
-function body() {
-  return (
-    <div className="body">
-      <TeamPage />
-    </div>
-  );
+function Body({current}) {
+    switch (current) {
+        case "Teams":
+            return (
+                <div className="body">
+                <TeamPage />
+                </div>
+            );
+        case "Graph":
+            return (
+                <div className="body">
+                </div>
+            )
+        case "Compare":
+            return (
+                <div className="body">
+                </div>
+            )
+        case "Lists":
+            return (
+                <div className="body">
+                </div>
+            )
+        default:
+            return (
+                <div className="body">
+                <TeamPage />
+                </div>
+            )
+    }
 }
 
 export function ScoutPage() {
+    const [page, setPage] = useState([]);
+
+    function changePage(e) {
+        setPage(e.currentTarget.value);
+    }
+
   return (
     <div className="Scout-Grapher">
-      {header()}
-      {body()}
+      <Header onButton={changePage}/>
+      <Body current={page}/>
     </div>
   );
 }

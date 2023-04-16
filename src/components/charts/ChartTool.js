@@ -19,7 +19,7 @@ function ChartPicker({chartType, data, options}) {
     }
 }
 
-export function ChartTool({team, labels, chartType}) {
+export function ChartTool({team, labels, chartType, title}) {
     const [scoutingData] = useContext(SDContext);
     //console.log(labels)
     let match_datasets = []
@@ -39,9 +39,28 @@ export function ChartTool({team, labels, chartType}) {
         labels: labels,
         datasets: match_datasets
     }
-
-    const options = {
-        responsive: true
+    let options
+    if (title){
+        options = {
+            responsive: true,
+            plugins: {
+                title: {
+                display: true,
+                text: title || undefined,
+                }
+            }
+        }
+    } else {
+        options = {
+            responsive: true,
+            scales: {
+                r: {
+                    grid: {
+                      color: 'blue'
+                    }
+                }
+            }
+        }
     }
 
     return (
@@ -51,7 +70,7 @@ export function ChartTool({team, labels, chartType}) {
     )
 }
 
-export function TrendGraph({ team, label, targets }) {
+export function TrendGraph({ team, label, targets, title }) {
     const [scoutingData] = useContext(SDContext);
     let match_datasets = []
     let index = scoutingData.findIndex((teamData) => teamData.team == team)
@@ -71,7 +90,13 @@ export function TrendGraph({ team, label, targets }) {
     }
 
     const options = {
-        responsive: true
+        responsive: true,
+        plugins: {
+            title: {
+              display: true,
+              text: title || "Match Trend",
+            }
+        }
     }
 
     return (

@@ -172,7 +172,8 @@ button:hover {
 
 .team-page-list {
   height: inherit;
-  display: grid
+  display: grid;
+  text-align: center;
 }
 
 .team-list {
