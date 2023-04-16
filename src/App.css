@@ -1,0 +1,118 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.Scout-Grapher-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+}
+
+.Logo {
+  width: 4vw;
+}
+
+header {
+}
+
+.header-divisions {
+  display: flex;
+  flex-direction: row;
+  padding: 1% 2%;
+  gap: 2%;
+}
+
+.Scout-Grapher {
+  background-color: #282c34;
+  height: 100vh;
+  color: white;
+  display: grid;
+  overflow: hidden;
+  grid-template-rows: max-content;
+}
+
+button {
+  background-color: #61dafb;
+  color: #282c34;
+  font-size: 1.5em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid #61dafb;
+  border-radius: 3px;
+}
+
+.Team-Data {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+
+}
+
+input {
+  background-color: #282c34;
+  color: #61dafb;
+  font-size: 1.5em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid #61dafb;
+  border-radius: 3px;
+}
+
+
+button:hover {
+  background-color: #282c34;
+  color: #61dafb;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.body {
+  display: flex;
+  height: 100%
+}
+
+.body-left, .body-right {
+  background-color: #282c34;
+  color: white;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.body-left-top, .body-left-bottom, .body-right-top, .body-right-bottom {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
