@@ -1,3 +1,30 @@
+:root {
+  --primary-color: #61dafb;
+  --secondary-color: #282c34;
+  --text-color: white;
+
+  --primary-color-hover: #282c34;
+  --secondary-color-hover: #61dafb;
+  --text-color-hover: white;
+
+  --primary-color-active: #282c34;
+  --secondary-color-active: #61dafb;
+  --text-color-active: white;
+
+  --primary-color-focus: #282c34;
+  --secondary-color-focus: #61dafb;
+  --text-color-focus: white;
+
+  --site-height: 100vh;
+
+  --header-height: 15vh;
+
+  --body-height: calc(var(--site-height) - var(--header-height));
+
+}
+
+
+
 .App {
   text-align: center;
 }
@@ -19,6 +46,7 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  height: var(--header-height);
 }
 
 .Logo {
@@ -39,9 +67,8 @@ header {
   background-color: #282c34;
   height: 100vh;
   color: white;
-  display: grid;
-  overflow: hidden;
-  grid-template-rows: max-content;
+  display: grid;;
+  grid-template-rows: var(--header-height) var(--body-height);
 }
 
 button {
@@ -56,7 +83,6 @@ button {
 
 .Team-Data {
   background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -115,4 +141,42 @@ button:hover {
   align-items: center;
   justify-content: center;
   width: 100%;
+}
+
+.team-page {
+  display: grid;
+  grid-auto-flow: column;
+  width: 100%;
+  height: var(--body-height)
+}
+
+.team-page-list {
+  height: inherit;
+  display: grid
+}
+
+.team-list {
+  overflow: auto;
+}
+
+ .team-page-graph {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: center;
+  width: 100%;
+}
+
+.team-page-graph-auto, .team-page-graph-tele, .team-page-graph-end {
+  display: grid;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  justify-items: center;
+  grid-auto-rows: max-content;
+}
+
+.chart-container {
+  width: 100%;
+  height: 100%;
 }

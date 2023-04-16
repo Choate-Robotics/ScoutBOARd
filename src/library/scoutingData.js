@@ -1,5 +1,17 @@
 import React, { createContext, useState } from 'react';
 
+export const SDRContext = createContext();
+
+export const SDRProvider = ({ children }) => {
+  const [ScoutingDataRaw, setScoutingDataRaw] = useState([]);
+
+  return (
+    <SDRContext.Provider value={[ScoutingDataRaw, setScoutingDataRaw]}>
+      {children}
+    </SDRContext.Provider>
+  );
+};
+
 export const SDContext = createContext();
 
 export const SDProvider = ({ children }) => {
@@ -9,5 +21,17 @@ export const SDProvider = ({ children }) => {
     <SDContext.Provider value={[ScoutingData, setScoutingData]}>
       {children}
     </SDContext.Provider>
+  );
+};
+
+export const IKContext = createContext();
+
+export const IKProvider = ({ children }) => {
+  const [ImportantKeys, setImportantKeys] = useState([]);
+
+  return (
+    <IKContext.Provider value={[ImportantKeys, setImportantKeys]}>
+      {children}
+    </IKContext.Provider>
   );
 };

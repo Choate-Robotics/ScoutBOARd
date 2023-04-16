@@ -1,11 +1,13 @@
 import react from "react";
 import { useState, useContext } from "react";
 import papa from "papaparse";
-import { SDContext } from "../library/scoutingData";
+import { SDRContext } from "../library/scoutingData";
+import  compileData  from "../library/dataCompiler";
 import RadarChart from "./charts/RadarChart";
 
 export function TitleScreen() {
-  const [, setScoutingData] = useContext(SDContext);
+  const [ScoutingDataRaw, setScoutingDataRaw] = useContext(SDRContext);
+
   const uploadCSV = (event) => {
     const file = event.target.files[0];
     papa.parse(file, {
@@ -13,7 +15,7 @@ export function TitleScreen() {
       skipEmptyRows: true,
       complete: function (results) {
         console.log("Parsed csv", results.data);
-        setScoutingData(results.data);
+        setScoutingDataRaw(results.data);
       },
       error: function (error) {
         console.log("Error parsing csv", error);

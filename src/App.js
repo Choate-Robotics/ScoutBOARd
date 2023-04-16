@@ -1,17 +1,22 @@
 import logo from "./logo.svg";
 import "./App.css";
 // import papa from "papaparse";
-import { SDContext } from "./library/scoutingData";
+import { SDContext, SDRContext } from "./library/scoutingData";
 import { useState, useContext } from "react";
- import { SDProvider } from "./library/scoutingData";
+ import { SDProvider, SDRProvider, IKProvider } from "./library/scoutingData";
 import {TitleScreen, Person, Robots} from "./components/general";
+import compileData from "./library/dataCompiler";
 import {ScoutPage} from "./components/scoutPage";
 function SiteController() {
+  let compiled = false
+  const [scoutingDataRaw,] = useContext(SDRContext);
   const [scoutingData,] = useContext(SDContext);
-  if (scoutingData.length == 0) {
+  if (scoutingDataRaw.length == 0 && scoutingData.length == 0) {
     return <TitleScreen />;
+  } else if (scoutingDataRaw.length > 0 && scoutingData.length == 0) {
+    compiled = true;
+    compileData();
   } else {
-
   return (
     <ScoutPage />
     );
@@ -22,7 +27,11 @@ function App() {
 
   return (
     <SDProvider>
+    <IKProvider>
+    <SDRProvider>
       <SiteController />
+    </SDRProvider>
+    </IKProvider>
     </SDProvider>
   );
 }
