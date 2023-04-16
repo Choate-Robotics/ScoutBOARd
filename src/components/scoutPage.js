@@ -152,54 +152,75 @@ function TeamPage() {
   );
 }
 
-function PickListItem(){
-    const [collected, drag, dragPreview] = useDrag({
-        type: "pickListItem",
-        item: {team: "Test"},
-    })
+function PickListItem({item}){
 
-    return collected.IsDragging? (
-        <div ref={dragPreview} className="pick-list-item">
-            <h3>Dragging</h3>
-        </div>
-    ) : (
-        <div ref={drag} {...collected} className="pick-list-item">
-            <h3>Test</h3>
-        </div>
-    )
-}
-
-function PickList() {
-
-    const [collectedProps, drop] = useDrop({
-        accept: "pickListItem",
-        drop: (item, monitor) => {
-            console.log(item)
-        }
-    })
 
     return (
-        <div ref={drop} className="pick-list">
-            Drop Target
+        <div className="pick-list-item">
+            <h3>{item}</h3>
+        </div>
+    ) 
+}
+
+function PickList({list}) {
+
+
+    return (
+        <div className="pick-list">
+            {list.forEach(element => {
+                <PickListItem item={element}/>
+            })}
+
         </div>
     )
 }
 
 function PickListPage() {
+
+    const [listOne, setListOne] = useState([])
+    const [listTwo, setListTwo] = useState([])
+    
+
+    function addToListOne(e){
+        console.log(e.currentTarget)
+        if (e.currentTarget.getAttribute("team") === null) {
+            return;
+        }
+        if(listOne.includes(e.currentTarget.getAttribute("team"))){
+            return;
+        }
+        let newList = listOne
+        newList.push(e.currentTarget.getAttribute("team"))
+        setListOne(newList)
+        console.log(listOne)
+    }
+
+    function deleteFromListOne(e){
+
+    }
+
+    function addToListTwo(e){
+
+    }
+
+    function deleteFromListTwo(e){
+
+    }
+
     return (
         <div className="pick-list-page">
             <div className="team-page-list">
                 <h2>Team List</h2>
-                <TeamList />
+                <TeamList onTeam={addToListOne}/>
             </div>
             <div className="pick-list-page-lists">
                 <div className="pick-list-page-list">
                     <h3>1st Pick List</h3>
-                    <PickListItem />
+                    <PickList list={listOne}/>
                 </div>
                 <div className="pick-list-page-list">
                     <h3>2nd Pick List</h3>
-                    <PickList />
+                    <PickList list={listTwo}/>
                 </div>
             </div>
         </div>
