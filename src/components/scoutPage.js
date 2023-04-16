@@ -2,159 +2,166 @@ import react from "react";
 import { useState, useContext } from "react";
 import papa from "papaparse";
 import { SDContext } from "../library/scoutingData";
-import RadarChart from "./charts/RadarChart";
-import BarChart from "./charts/BarChart";
+import {ChartTool, TrendGraph} from "./charts/ChartTool";
 import WiredBoar from "../assets/WiredBoar.png";
 import compileData from "../library/dataCompiler";
+import BarChart from "./charts/BarChart";
 function header() {
-    return (
-        <header>
-            <div className="header-divisions">
-                <div className="header-division-logo">
-                    <img src={WiredBoar} className="Logo" alt="Boar Logo" />
-                </div>
-                <div className="header-division-name">
-                    <h2>Scout Grapher</h2>
-                </div>
-                <div className="header-divisions-buttons">
-                    <button className="header-division-button">Teams</button>
-                    <button className="header-division-button">Graph</button>
-                    <button className="header-division-button">Compare</button>
-                    <button className="header-division-button">Pick Lists</button>
-                </div>
-            </div>
-        </header>
-    )
+  return (
+    <header>
+      <div className="header-divisions">
+        <div className="header-division-logo">
+          <img src={WiredBoar} className="Logo" alt="Boar Logo" />
+        </div>
+        <div className="header-division-name">
+          <h2>Scout Grapher</h2>
+        </div>
+        <div className="header-divisions-buttons">
+          <button className="header-division-button">Teams</button>
+          <button className="header-division-button">Graph</button>
+          <button className="header-division-button">Compare</button>
+          <button className="header-division-button">Pick Lists</button>
+        </div>
+      </div>
+    </header>
+  );
 }
 
-function TeamList() {
-    const [scoutingData] = useContext(SDContext);
-    let teams = scoutingData.map((team) => team.team)
-    return (
-        
-        <div className="team-list">
-            <ul>
-                {teams.map((team) => <li>{team}</li>)}
-            </ul>
-        </div>
-    )
-}
+function TeamList({ onTeam }) {
+  const [scoutingData] = useContext(SDContext);
 
-function GraphTool({team}, [labels]) {
-    const [scoutingData] = useContext(SDContext);
-    console.log(labels)
-    let match_datasets = []
-    let index = scoutingData.findIndex((teamData) => teamData.team == team)
-    console.log(index)
-    let name = "Match: "
-    for (let i = 0; i < scoutingData[index].matches.length; i++) {
-        let match = {label: "", data: []}
-        for (let j = 0; j < labels.length; j++) {
-            match.label = name.concat(scoutingData[index].matches[i]["Match Num"])
-            
-            match.data.push(scoutingData[index].matches[i][labels[j]])
-        }
-        match_datasets.push(match)
+  function average(arr, key) {
+    let sum = 0;
+    for (let i = 0; i < arr.length; i++) {
+      sum += parseInt(arr[i][key]);
     }
-    const data = {
-        labels: labels,
-        datasets: match_datasets
-    }
+    let ave = sum / arr.length;
+    return ave.toFixed(2);
+  }
 
-    const options = {
-        responsive: true
-    }
-    return (
-        <div className="chart-container">
-            <RadarChart data={data} options={options} />
-        </div>
-    )
+  return (
+    <div className="team-list">
+      <table className="team-list-table">
+        <thead>
+          <th>Team</th>
+          <th>Ave. Auto</th>
+          <th>Ave. Tele</th>
+          <th>Ave. End</th>
+        </thead>
+        {scoutingData.map((team, i) => (
+            <tr key={i} team={team.team} onClick={onTeam}>
+              <td>{team.team}</td>
+              <td>{average(team.matches, "TotalAuto")}</td>
+              <td>{average(team.matches, "TotalTele")}</td>
+              <td>{average(team.matches, "Charging Station")}</td>
+            </tr>
+        ))}
+      </table>
+    </div>
+  );
 }
 
 function AutoGraph({ team }) {
-    const [scoutingData] = useContext(SDContext);
-    const sData = scoutingData
-    let autos = ["AutoHighCones", "AutoMidCones", "AutoLowCones", "AutoHighCubes", "AutoMidCubes", "AutoLowCubes", "AutoHybrid"]
-    let match_datasets = []
-    let index = scoutingData.findIndex((teamData) => teamData.team == team)
-    console.log(index)
-    let name = "Match: "
-    let stack = "Stack "
-    for (let i = 0; i < scoutingData[index].matches.length; i++) {
-        let match = {label: "", data: [], stack: ""}
-        for (let j = 0; j < autos.length; j++) {
-            match.label = name.concat(sData[index].matches[i]["Match Num"])
-            match.data.push(sData[index].matches[i][autos[j]])
-            match.stack = stack.concat([i])
-        }
-        match_datasets.push(match)
-    }
-    const data = {
-        labels: autos,
-        datasets: match_datasets
-    }
-
-    const options = {
-        responsive: true,
-    }
-
-    console.log(data)
-
-    return (
-        <div className="chart-container">
-            <RadarChart data={data} options={options} />
-        </div>
-    )
+  const autos = [
+    "AutoHighCones",
+    "AutoMidCones",
+    "AutoLowCones",
+    "AutoHighCubes",
+    "AutoMidCubes",
+    "AutoLowCubes",
+    "AutoHybrid",
+  ];
+  const total = ["TotalAuto"];
+  return (
+    <div className="charts-wrapper">
+      <ChartTool team={team} labels={autos} chartType={"radar"} />
+      <ChartTool team={team} labels={total} chartType={"bar"} />
+    </div>
+  );
 }
 
 function TeleGraph({ team }) {
-    let objects = ["TeleHighCones", "TeleMidCones", "TeleLowCones", "TeleHighCubes", "TeleMidCubes", "TeleLowCubes", "TeleHybrid"]
-    
-    return (
-        <GraphTool team={team} label={objects} />
-    )
+  const tele = [
+    "TeleHighCones",
+    "TeleMidCones",
+    "TeleLowCones",
+    "TeleHighCubes",
+    "TeleMidCubes",
+    "TeleLowCubes",
+    "TeleHybrid",
+  ];
+  const total = ["TotalTele"];
+  return (
+    <div className="charts-wrapper">
+      <ChartTool team={team} labels={tele} chartType={"radar"} />
+      <ChartTool team={team} labels={total} chartType={"bar"} />
+    </div>
+  );
+}                  
+
+
+function EndGraph({ team }) {
+  const end = ["Charging Station"];
+  const trend = ["TotalAuto", "TotalTele", "Charging Station"]
+  return (
+    <div className="charts-wrapper">
+        <ChartTool team={team} labels={end} chartType={"bar"} />
+        <h3>Match Trend:</h3>
+        <TrendGraph team={team} label={"Match Num"} targets={trend}/>
+    </div>
+    );
 }
 
 function TeamPage() {
-    return (
-        <div className="team-page">
-            <div className="team-page-list">
-                <h2>Team Data: </h2>
-                <TeamList />
-            </div>
-            <div className="team-page-graph">
-                <div className="team-page-graph-auto">
-                    <h3>Auto</h3>
-                    <AutoGraph team={125} />
-                </div>
-                <div className="team-page-graph-tele">
-                    <h3>Tele</h3>
-                    <TeleGraph team={125} />
-                </div>
-                <div className="team-page-graph-end">
-                    <h3>End</h3>
+  const [scoutingData] = useContext(SDContext);
+  let [team, setTeam] = useState(scoutingData[0].team);
 
-                </div>
-            </div>
+  function onTeamSelect(e) {
+    console.log(e.currentTarget)
+    if (e.currentTarget.getAttribute("team") === null) {
+      return;
+    }
+    setTeam(e.currentTarget.getAttribute("team"));
+    console.log(e.currentTarget.getAttribute("team"));
+  }
+
+  return (
+    <div className="team-page">
+      <div className="team-page-list">
+        <h2>Team Data: {team}</h2>
+        <TeamList onTeam={onTeamSelect} />
+      </div>
+      <div className="team-page-graph">
+        <div className="team-page-graph-auto">
+          <h3>Auto</h3>
+          <AutoGraph team={team} />
         </div>
-    )
+        <div className="team-page-graph-tele">
+          <h3>Tele</h3>
+          <TeleGraph team={team} />
+        </div>
+        <div className="team-page-graph-end">
+          <h3>End</h3>
+          <EndGraph team={team} />
+        </div>
+      </div>
+    </div>
+  );
 }
 
-
 function body() {
-    return (
-        <div className="body">
-            <TeamPage />
-        </div>
-    )
+  return (
+    <div className="body">
+      <TeamPage />
+    </div>
+  );
 }
 
 export function ScoutPage() {
-    
-    return (
-        <div className="Scout-Grapher">
-            {header()}
-            {body()}
-        </div>
-    )
+  return (
+    <div className="Scout-Grapher">
+      {header()}
+      {body()}
+    </div>
+  );
 }
