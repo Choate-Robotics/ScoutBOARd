@@ -6,6 +6,9 @@ import {ChartTool, TrendGraph} from "./charts/ChartTool";
 import WiredBoar from "../assets/WiredBoar.png";
 import compileData from "../library/dataCompiler";
 import BarChart from "./charts/BarChart";
+import { useDrag, useDrop } from "react-dnd";
+
+
 function Header({onButton}) {
   return (
     <header>
@@ -60,6 +63,7 @@ function TeamList({ onTeam }) {
     </div>
   );
 }
+
 
 function AutoGraph({ team }) {
   const autos = [
@@ -148,6 +152,61 @@ function TeamPage() {
   );
 }
 
+function PickListItem(){
+    const [collected, drag, dragPreview] = useDrag({
+        type: "pickListItem",
+        item: {team: "Test"},
+    })
+
+    return collected.IsDragging? (
+        <div ref={dragPreview} className="pick-list-item">
+            <h3>Dragging</h3>
+        </div>
+    ) : (
+        <div ref={drag} {...collected} className="pick-list-item">
+            <h3>Test</h3>
+        </div>
+    )
+}
+
+function PickList() {
+
+    const [collectedProps, drop] = useDrop({
+        accept: "pickListItem",
+        drop: (item, monitor) => {
+            console.log(item)
+        }
+    })
+
+    return (
+        <div ref={drop} className="pick-list">
+            Drop Target
+        </div>
+    )
+}
+
+function PickListPage() {
+    return (
+        <div className="pick-list-page">
+            <div className="team-page-list">
+                <h2>Team List</h2>
+                <TeamList />
+            </div>
+            <div className="pick-list-page-lists">
+                <div className="pick-list-page-list">
+                    <h3>1st Pick List</h3>
+                    <PickListItem />
+                </div>
+                <div className="pick-list-page-list">
+                    <h3>2nd Pick List</h3>
+                    <PickList />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+
 function Body({current}) {
     switch (current) {
         case "Teams":
@@ -169,6 +228,7 @@ function Body({current}) {
         case "Lists":
             return (
                 <div className="body">
+                    <PickListPage />
                 </div>
             )
         default:

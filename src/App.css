@@ -163,7 +163,7 @@ button:hover {
   width: 100%;
 }
 
-.team-page {
+.team-page, .pick-list-page {
   display: grid;
   grid-auto-flow: column;
   width: 100%;
@@ -187,8 +187,15 @@ button:hover {
   justify-content: center;
   width: 100%;
 }
+.pick-list-page-lists {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  width: 100%;
+}
 
-.team-page-graph-auto, .team-page-graph-tele, .team-page-graph-end {
+.team-page-graph-auto, .team-page-graph-tele, .team-page-graph-end, .pick-list-page-list {
   display: grid;
   justify-content: center;
   width: 100%;
