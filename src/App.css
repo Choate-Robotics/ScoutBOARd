@@ -192,16 +192,45 @@ button:hover {
   align-items: center;
   grid-template-columns: 1fr 1fr;
   justify-content: center;
+  gap: 5%;
+  padding: 5%;
+  overflow: auto;
+}
+
+.pick-list-page-list {
+  background-color: var(--primary-color-hover);
+}
+
+.pick-list {
+  width: 80%;
+}
+
+.pick-list-item {
+  border-bottom: solid .1rem;
   width: 100%;
+  text-align: center;
+  transition: .25s all;
+  position: relative;
+}
+
+.pick-list-item p {
+  position: absolute;
+  left: 10%;
+  top: 10%;
+  margin: 0;
+}
+
+.pick-list-item:hover {
+  color: var(--secondary-color-hover);
 }
 
 .team-page-graph-auto, .team-page-graph-tele, .team-page-graph-end, .pick-list-page-list {
   display: grid;
-  justify-content: center;
   width: 100%;
   height: 100%;
   justify-items: center;
   grid-auto-rows: max-content;
+  text-align: center;
 }
 
 .chart-container {
@@ -211,10 +240,12 @@ button:hover {
 
 .charts-wrapper {
   width: 100%;
-  height: 100%;
+  height: 70vh;
   display: grid;
   gap: 5%;
   text-align: center;
+  align-items: center;
+  align-content: center;
 }
 
 .team-list-table {
@@ -231,9 +262,18 @@ button:hover {
 
 
 .team-list-table tr:hover {
-  background-color: var(--primary-color-hover);
-  color: #61dafb;
+  background-color: white;
+  color: red;
+  font-style: italic;
+  font-weight: bolder;
 }
+
+select {
+  border: #282c34 solid;
+  color: aliceblue;
+  background-color: #303540;
+}
+
 
 .team-list-table td {
   padding: 1%;
@@ -241,7 +281,10 @@ button:hover {
 
 .team-list-table th {
   padding: 1%;
+  border-bottom: .25rem solid #282c34;
 }
+
+
 
 .team-list-table tr:nth-child(even) {
   background-color: #282c34;
@@ -250,6 +293,9 @@ button:hover {
 .team-list-table thead {
   background-color: #61dafb;
   color: #282c34;
+  position: sticky;
+  top: 0;
+  
 }
 
 .team-list-table tr:nth-child(odd) {

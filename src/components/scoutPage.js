@@ -32,26 +32,74 @@ function Header({onButton}) {
 
 function TeamList({ onTeam }) {
   const [scoutingData] = useContext(SDContext);
+  const [filtered, setFiltered] = useState("Highest-Overall");
 
   function average(arr, key) {
+    
     let sum = 0;
     for (let i = 0; i < arr.length; i++) {
       sum += parseInt(arr[i][key]);
     }
     let ave = sum / arr.length;
-    return ave.toFixed(2);
+    //console.log(key, ave.toFixed(2))
+    return parseFloat(ave.toFixed(2));
+    
   }
+
+  function changeFilter(e) {
+    setFiltered(e.target.value);
+    console.log(e.target.value)
+  }
+
+    let data = scoutingData;
+    if (filtered === "Highest-Overall") {
+      data.sort((a, b) => {
+        let aAvg = average(a.matches, "TotalAuto") + average(a.matches, "TotalTele") + average(a.matches, "Charging Station");
+        let bAvg = average(b.matches, "TotalAuto") + average(b.matches, "TotalTele") + average(b.matches, "Charging Station");
+        return bAvg - aAvg;
+      });
+    } else if (filtered === "Highest-Auto") {
+      data.sort((a, b) => {
+        let aAvg = average(a.matches, "TotalAuto");
+        let bAvg = average(b.matches, "TotalAuto");
+        return bAvg - aAvg;
+      });
+    } else if (filtered === "Highest-Tele") {
+      data.sort((a, b) => {
+        let aAvg = average(a.matches, "TotalTele");
+        let bAvg = average(b.matches, "TotalTele");
+        return bAvg - aAvg;
+      });
+    } else if (filtered === "Highest-End") {
+      data.sort((a, b) => {
+        let aAvg = average(a.matches, "Charging Station");
+        let bAvg = average(b.matches, "Charging Station");
+        return bAvg - aAvg;
+      });
+    }
 
   return (
     <div className="team-list">
+      <select className="team-list-filter" onChange={changeFilter}>
+          <option value="Highest-Overall">Overall</option>
+          <option value="Highest-Auto">Auto</option>
+          <option value="Highest-Tele">Tele</option>
+          <option value="Highest-End">End</option>
+      </select> <small>*Averaged over all matches*</small>
       <table className="team-list-table">
         <thead>
           <th>Team</th>
-          <th>Ave. Auto</th>
-          <th>Ave. Tele</th>
-          <th>Ave. End</th>
+          <th>
+            <p>Auto</p>
+          </th>
+          <th>
+            <p>Tele</p>
+          </th>
+          <th>
+            <p>End</p>
+          </th>
         </thead>
-        {scoutingData.map((team, i) => (
+        {data.map((team, i) => (
             <tr key={i} team={team.team} onClick={onTeam}>
               <td>{team.team}</td>
               <td>{average(team.matches, "TotalAuto")}</td>
@@ -152,24 +200,25 @@ function TeamPage() {
   );
 }
 
-function PickListItem({item}){
+function PickListItem({item, num, Click}){
 
 
     return (
-        <div className="pick-list-item">
+        <div key={num} team={item} onClick={Click} className="pick-list-item">
+            <p>{num + 1}</p>
             <h3>{item}</h3>
         </div>
     ) 
 }
 
-function PickList({list}) {
-
+function PickList({list, Click}) {
 
     return (
         <div className="pick-list">
-            {list.forEach(element => {
-                <PickListItem item={element}/>
-            })}
+            {list.length == 0 ? <h3>Empty</h3> : null}
+            {list.map((item, i) => (
+                <PickListItem item={item} Click={Click} num={i}/>
+            ))}
 
         </div>
     )
@@ -189,13 +238,20 @@ function PickListPage() {
         if(listOne.includes(e.currentTarget.getAttribute("team"))){
             return;
         }
-        let newList = listOne
-        newList.push(e.currentTarget.getAttribute("team"))
-        setListOne(newList)
+        setListOne([...listOne, e.currentTarget.getAttribute("team")])
         console.log(listOne)
     }
 
     function deleteFromListOne(e){
+        //removes item from list using team name
+        console.log(e.currentTarget)
+        if (e.currentTarget.getAttribute("team") === null) {
+            return;
+        }
+        let newList = listOne.filter((item) => item != e.currentTarget.getAttribute("team"))
+        setListOne(newList)
+        
+
 
     }
 
@@ -216,7 +272,7 @@ function PickListPage() {
             <div className="pick-list-page-lists">
                 <div className="pick-list-page-list">
                     <h3>1st Pick List</h3>
-                    <PickList list={listOne}/>
+                    <PickList list={listOne} Click={deleteFromListOne}/>
                 </div>
                 <div className="pick-list-page-list">
                     <h3>2nd Pick List</h3>
