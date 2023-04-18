@@ -2,12 +2,12 @@ import react from "react";
 import { useState, useContext } from "react";
 import papa from "papaparse";
 import { SDContext } from "../library/scoutingData";
-import {ChartTool, TrendGraph} from "./charts/ChartTool";
+import {AutoPie, ChartTool, TrendGraph} from "./charts/ChartTool";
 import WiredBoar from "../assets/WiredBoar.png";
 import compileData from "../library/dataCompiler";
 import BarChart from "./charts/BarChart";
 import { useDrag, useDrop } from "react-dnd";
-
+import {KEYS, SCALER} from "../library/dataKeys";
 
 function Header({onButton}) {
   return (
@@ -30,53 +30,100 @@ function Header({onButton}) {
   );
 }
 
+function average(arr, key) {
+  let sum = 0;
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i][key] === "TRUE") {
+      //console.log(arr[i][key])
+      sum += 1;
+    }
+    else if (arr[i][key] === "FALSE") {
+      //console.log(arr[i][key])
+      sum += 0;
+    }
+    else if (arr[i][key] === "null") {
+      sum += 0;
+    }
+    else {
+    sum += parseInt(arr[i][key]);
+    }
+  }
+  let ave = sum / arr.length;
+  return parseFloat(ave.toFixed(2));
+  
+}
+
+function totalTelePoints(arr) {
+  let TeleHigh = (average(arr, KEYS.Teleop.HighCone) + average(arr, KEYS.Teleop.HighCube)) * SCALER.Teleop.High
+  let TeleMid = (average(arr, KEYS.Teleop.MidCone) + average(arr, KEYS.Teleop.MidCube)) * SCALER.Teleop.Mid
+  let TeleLow = (average(arr, KEYS.Teleop.LowCone) + average(arr, KEYS.Teleop.LowCube)) * SCALER.Teleop.Low
+  return TeleHigh + TeleMid + TeleLow
+}
+
+function totalAutoPoints(arr) {
+  let AutoHigh = (average(arr, KEYS.Auto.HighCone) + average(arr, KEYS.Auto.HighCube)) * SCALER.Auto.High
+  let AutoMid = (average(arr, KEYS.Auto.MidCone) + average(arr, KEYS.Auto.MidCube)) * SCALER.Auto.Mid
+  let AutoLow = (average(arr, KEYS.Auto.LowCone) + average(arr, KEYS.Auto.LowCube)) * SCALER.Auto.Low
+  let AutoMobility = average(arr, KEYS.Auto.Mobility) * SCALER.Auto.Mobility
+  let AutoDock = average(arr, KEYS.Auto.ChargingStation.Docked) * SCALER.Auto.ChargingStation.Docked
+  let AutoEngage = average(arr, KEYS.Auto.ChargingStation.Engaged) * SCALER.Auto.ChargingStation.Engaged
+  return AutoHigh + AutoMid + AutoLow + AutoMobility + AutoDock + AutoEngage
+}
+
+function totalEndgamePoints(arr) {
+  let EndgamePark = average(arr, KEYS.Endgame.Parked) * SCALER.Endgame.Parked
+  let EndgameDock = average(arr, KEYS.Endgame.ChargingStation.Docked) * SCALER.Endgame.ChargingStation.Docked
+  let EndgameEngage = average(arr, KEYS.Endgame.ChargingStation.Engaged) * SCALER.Endgame.ChargingStation.Engaged
+  return EndgamePark + EndgameDock + EndgameEngage
+}
+
 function TeamList({ onTeam }) {
   const [scoutingData] = useContext(SDContext);
   const [filtered, setFiltered] = useState("Highest-Overall");
+  const [flow, setFlow] = useState("Top to Bottom");
 
-  function average(arr, key) {
-    
-    let sum = 0;
-    for (let i = 0; i < arr.length; i++) {
-      sum += parseInt(arr[i][key]);
-    }
-    let ave = sum / arr.length;
-    //console.log(key, ave.toFixed(2))
-    return parseFloat(ave.toFixed(2));
-    
-  }
 
   function changeFilter(e) {
     setFiltered(e.target.value);
     console.log(e.target.value)
   }
 
+  function changeFlow(e) {
+    setFlow(e.target.value);
+    console.log(e.target.value)
+  }
+
     let data = scoutingData;
     if (filtered === "Highest-Overall") {
       data.sort((a, b) => {
-        let aAvg = average(a.matches, "TotalAuto") + average(a.matches, "TotalTele") + average(a.matches, "Charging Station");
-        let bAvg = average(b.matches, "TotalAuto") + average(b.matches, "TotalTele") + average(b.matches, "Charging Station");
+        let aAvg = totalAutoPoints(a.matches) + totalTelePoints(a.matches) + totalEndgamePoints(a.matches);
+        let bAvg = totalAutoPoints(b.matches) + totalTelePoints(b.matches) + totalEndgamePoints(b.matches);
         return bAvg - aAvg;
       });
     } else if (filtered === "Highest-Auto") {
       data.sort((a, b) => {
-        let aAvg = average(a.matches, "TotalAuto");
-        let bAvg = average(b.matches, "TotalAuto");
+        let aAvg = totalAutoPoints(a.matches);
+        let bAvg = totalAutoPoints(b.matches);
         return bAvg - aAvg;
       });
     } else if (filtered === "Highest-Tele") {
       data.sort((a, b) => {
-        let aAvg = average(a.matches, "TotalTele");
-        let bAvg = average(b.matches, "TotalTele");
+        let aAvg = totalTelePoints(a.matches);
+        let bAvg = totalTelePoints(b.matches);
         return bAvg - aAvg;
       });
     } else if (filtered === "Highest-End") {
       data.sort((a, b) => {
-        let aAvg = average(a.matches, "Charging Station");
-        let bAvg = average(b.matches, "Charging Station");
+        let aAvg = totalEndgamePoints(a.matches);
+        let bAvg = totalEndgamePoints(b.matches);
         return bAvg - aAvg;
       });
     }
+
+    if (flow === "Bottom to Top") {
+      data.reverse();
+    }
+
 
   return (
     <div className="team-list">
@@ -85,26 +132,30 @@ function TeamList({ onTeam }) {
           <option value="Highest-Auto">Auto</option>
           <option value="Highest-Tele">Tele</option>
           <option value="Highest-End">End</option>
+      </select> 
+      <select className="team-list-flow" onChange={changeFlow}>
+          <option value="Top to Bottom">Top to Bottom</option>
+          <option value="Bottom to Top">Bottom to Top</option>
       </select> <small>*Averaged over all matches*</small>
       <table className="team-list-table">
         <thead>
-          <th>Team</th>
+          <th>Team #</th>
           <th>
-            <p>Auto</p>
+            <p>Auto pts</p>
           </th>
           <th>
-            <p>Tele</p>
+            <p>Tele pts</p>
           </th>
           <th>
-            <p>End</p>
+            <p>End pts</p>
           </th>
         </thead>
         {data.map((team, i) => (
             <tr key={i} team={team.team} onClick={onTeam}>
               <td>{team.team}</td>
-              <td>{average(team.matches, "TotalAuto")}</td>
-              <td>{average(team.matches, "TotalTele")}</td>
-              <td>{average(team.matches, "Charging Station")}</td>
+              <td>{totalAutoPoints(team.matches).toFixed(2)}</td>
+              <td>{totalTelePoints(team.matches).toFixed(2)}</td>
+              <td>{totalEndgamePoints(team.matches).toFixed(2)}</td>
             </tr>
         ))}
       </table>
@@ -114,58 +165,105 @@ function TeamList({ onTeam }) {
 
 
 function AutoGraph({ team }) {
-  const autos = [
-    "AutoHighCones",
-    "AutoMidCones",
-    "AutoLowCones",
-    "AutoHighCubes",
-    "AutoMidCubes",
-    "AutoLowCubes",
-    "AutoHybrid",
+  const autoLabels = [
+    "High Cone",
+    "High Cube",
+    "Mid Cone",
+    "Mid Cube",
+    "Low Cone",
+    "Low Cube",
+    "Mobility",
+    "Docked",
+    "Engaged",
+  ];
+  
+  const autoData = [
+    KEYS.Auto.HighCone,
+    KEYS.Auto.HighCube,
+    KEYS.Auto.MidCone,
+    KEYS.Auto.MidCube,
+    KEYS.Auto.LowCone,
+    KEYS.Auto.LowCube,
+    KEYS.Auto.Mobility,
+    KEYS.Auto.ChargingStation.Docked,
+    KEYS.Auto.ChargingStation.Engaged,
   ];
   const total = ["TotalAuto"];
   return (
     <div className="charts-wrapper">
-      <ChartTool team={team} labels={autos} chartType={"radar"}/>
-      <ChartTool team={team} labels={total} chartType={"bar"}/>
+      <AutoPie team={team} labels={autoLabels} data={autoData} title={"Ave. Auto"}/>
+      {/* <ChartTool team={team} labels={total} chartType={"bar"}/> */}
     </div>
   );
 }
 
 function TeleGraph({ team }) {
-  const tele = [
-    "TeleHighCones",
-    "TeleMidCones",
-    "TeleLowCones",
-    "TeleHighCubes",
-    "TeleMidCubes",
-    "TeleLowCubes",
-    "TeleHybrid",
+  const teleLabels = [
+    "High Cone",
+    "High Cube",
+    "Mid Cone",
+    "Mid Cube",
+    "Low Cone",
+    "Low Cube",
+  ];
+  
+  const teleData = [
+    KEYS.Teleop.HighCone,
+    KEYS.Teleop.HighCube,
+    KEYS.Teleop.MidCone,
+    KEYS.Teleop.MidCube,
+    KEYS.Teleop.LowCone,
+    KEYS.Teleop.LowCube,
   ];
   const total = ["TotalTele"];
+
+  const rscale = {
+    r: {
+      suggestedMax: 6,
+    }
+  }
+
+  const bscale = {
+    x: {},
+    y: {
+      max: 20,
+      min: 0,
+    }
+  }
+
   return (
     <div className="charts-wrapper">
-      <ChartTool team={team} labels={tele} chartType={"radar"}/>
-      <ChartTool team={team} labels={total} chartType={"bar"}/>
+      <ChartTool team={team} labels={teleLabels} data={teleData} scale={rscale} chartType={"radar"}/>
+      {/* <ChartTool team={team} labels={total} scale={bscale} chartType={"bar"}/> */}
     </div>
   );
 }                  
 
 
 function EndGraph({ team }) {
-  const end = ["Charging Station"];
+  const endLabels = [
+    "Docked",
+    "Engaged",
+    "Parked",
+  ]
+  
+  const endData = [
+    KEYS.Endgame.ChargingStation.Docked,
+    KEYS.Endgame.ChargingStation.Engaged,
+    KEYS.Endgame.Parked
+  ];
   const trend = ["TotalAuto", "TotalTele", "Charging Station", "TotalPieces"]
   return (
     <div className="charts-wrapper">
-        <ChartTool team={team} labels={end} chartType={"bar"} />
-        <TrendGraph team={team} label={"Match Num"} targets={trend} title={"Total Trend"}/>
+        <ChartTool team={team} labels={endLabels} data={endData} chartType={"radar"} />
+        {/* <TrendGraph team={team} label={"Match Num"} targets={trend} title={"Total Trend"}/> */}
     </div>
     );
 }
 
 function TeamPage() {
   const [scoutingData] = useContext(SDContext);
-  let [team, setTeam] = useState(scoutingData[0].team);
+  let [team, setTeam] = useState(0);
 
   function onTeamSelect(e) {
     console.log(e.currentTarget)
@@ -174,6 +272,7 @@ function TeamPage() {
     }
     setTeam(e.currentTarget.getAttribute("team"));
     console.log(e.currentTarget.getAttribute("team"));
+
   }
 
   return (
@@ -204,7 +303,7 @@ function PickListItem({item, num, Click}){
 
 
     return (
-        <div key={num} team={item} onClick={Click} className="pick-list-item">
+        <div key={num} rank={num} team={item} onClick={Click} className="pick-list-item">
             <p>{num + 1}</p>
             <h3>{item}</h3>
         </div>

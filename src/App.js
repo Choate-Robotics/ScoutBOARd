@@ -7,6 +7,9 @@ import { useState, useContext } from "react";
 import {TitleScreen, Person, Robots} from "./components/general";
 import compileData from "./library/dataCompiler";
 import {ScoutPage} from "./components/scoutPage";
+import { Colors } from "chart.js";
+import { Chart as ChartJS } from "chart.js/auto";
+ChartJS.register(Colors)
 function SiteController() {
   let compiled = false
   const [scoutingDataRaw,] = useContext(SDRContext);

@@ -25,7 +25,8 @@ export function TitleScreen() {
 
   return (
     <div className="Scout-Grapher">
-      <header className="Scout-Grapher-header">
+      <br />
+      <div className="Scout-Grapher-title">
         <h3>Welcome to Scout Grapher!</h3>
         <p>
           This is a tool to help you visualize your scouting data for the First
@@ -33,7 +34,7 @@ export function TitleScreen() {
         </p>
         <p>To get started, click the "Upload Data" button below.</p>
         <input type="file" id="file" accept=".csv" placeholder="Scouting Data" onChange={uploadCSV} />
-      </header>
+      </div>
     </div>
   );
 }
