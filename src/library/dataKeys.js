@@ -2,9 +2,10 @@ export const KEYS = {
   TeamNum: "Team Num",
   MatchNum: "Match Num",
   AllianceColor: "Alliance",
-  DefenceBot: "Defence Bot",
+  DefenseBot: "Defense Bot",
   DidFoul: "Did Foul",
-  comments: "Comments",
+  ScouterName: "Scouter Name",
+  Comments: "Comments",
   Rating: {
     Driver: "Driver Rating",
     Defense: "Defense Rating",

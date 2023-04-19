@@ -121,6 +121,7 @@ header {
 .Scout-Grapher {
   background-color: #282c34;
   height: 100vh;
+  width: 100vw;
   color: white;
   display: grid;;
   grid-template-rows: var(--header-height) var(--body-height);
@@ -214,6 +215,45 @@ button:hover {
 
 .team-list {
   overflow: auto;
+}
+
+.team-page-info {
+  display: grid;
+  overflow: auto;
+}
+
+.team-page-info-top {
+  padding-bottom: 1rem;
+  background-color: #24272d;
+}
+
+.team-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 20vh;
+  width: 100%;
+}
+
+.team-info div {
+  overflow: auto;
+}
+
+.title {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  background-color: #303540;
+  transition: .2s all;
+  padding: 1%;
+}
+
+.title * {
+  margin: 0;
+}
+
+.team-info div .title {
+  position: sticky;
+  top: 0;
 }
 
  .team-page-graph {

@@ -39,11 +39,18 @@ export function ChartTool({team, labels, data, chartType, plugins, scale}) {
         let match = {label: "", data: []}
         for (let j = 0; j < labels.length; j++) {
             match.label = name.concat(scoutingData[index].matches[i][KEYS.MatchNum])
-            
-            match.data.push(scoutingData[index].matches[i][data[j]])
+            let dataEntry = scoutingData[index].matches[i][data[j]]
+            if (dataEntry == "TRUE") {
+                dataEntry = 1
+            } else if (data == "FALSE") {
+                dataEntry = 0
+            }
+            match.data.push(dataEntry)
         }
         match_datasets.push(match)
     }
+    console.log(labels)
+    console.log(match_datasets)
     const chartData = {
         labels: labels,
         datasets: match_datasets
@@ -85,13 +92,24 @@ export function ChartTool({team, labels, data, chartType, plugins, scale}) {
     )
 }
 
-export function TrendGraph({ team, label, targets, title }) {
+export function TrendGraph({ team, labels, targets, title, stacked, axis }) {
     const [scoutingData] = useContext(SDContext);
     let match_datasets = []
     let index = scoutingData.findIndex((teamData) => teamData.team == team)
-    let labels = scoutingData[index].matches.map((match) => match[label])
+    let label = scoutingData[index].matches.map((match) => match[KEYS.MatchNum])
+    console.log("labels", label)
     for (let i = 0; i < targets.length; i++) {
-        let data = scoutingData[index].matches.map((match) => match[targets[i]])
+        let data = scoutingData[index].matches.map((match) => {
+            if(match[targets[i]] == "TRUE") {
+                return 1
+            } else if (match[targets[i]] == "FALSE") {
+                return 0
+            } else if (match[targets[i]] == "null") {
+                return 0
+            } else {
+                return match[targets[i]]
+            }
+        })
         let dataset = {
             label: targets[i],
             data: data,
@@ -99,9 +117,26 @@ export function TrendGraph({ team, label, targets, title }) {
         }
         match_datasets.push(dataset)
     }
+    console.log("datasets", match_datasets)
     const data = {
-        labels: labels,
+        labels: label,
         datasets: match_datasets
+    }
+
+    let scale = {}
+    if (stacked) {
+        scale = {
+            x: {
+                stacked: true
+            },
+            y: {
+                stacked: true
+            },
+        }
+    }
+    let indexAxis = "x"
+    if (axis == "y") {
+        indexAxis = "y"
     }
 
     const options = {
@@ -111,8 +146,14 @@ export function TrendGraph({ team, label, targets, title }) {
               display: true,
               text: title || "Match Trend",
             }
-        }
+        },
+        indexAxis: indexAxis,
+        scales: scale,
     }
+
+    console.log("Auto Trend Graph")
+    console.log(data)
+    console.log(options)
 
     return (
         <div className="chart-container">

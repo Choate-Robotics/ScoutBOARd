@@ -171,7 +171,7 @@ function AutoGraph({ team }) {
 
   const plugins = {
     legend: {
-      display: true,
+      display: false,
     },
     title: {
       display: true,
@@ -188,13 +188,23 @@ function AutoGraph({ team }) {
       ticks: {
         display: false,
       },
+      pointLabels: {
+        display: true,
+        centerPointLabels: true,
+        font: {
+          size: 8
+        }
+      },
     },
   };
+
+  
+
 
   return (
     <div className="charts-wrapper">
       <AutoPie team={team} labels={autoLabels} data={autoData} scale={rscale} plugins={plugins}/>
-      {/* <ChartTool team={team} labels={total} chartType={"bar"}/> */}
+      <TrendGraph team={team} labels={autoLabels} targets={autoData} stacked={true} axis={'y'} />
     </div>
   );
 }
@@ -307,16 +317,32 @@ function EndGraph({ team }) {
 function TeamInfo({ team }) {
   const [scoutingData] = useContext(SDContext);
 
+  let teamInfo = scoutingData.filter((match) => match.team === team)[0] || {matches: []};
+
+  let defense = (average(teamInfo.matches, KEYS.DefenseBot) > 0.5) ? "Yes" : "No";
   return (
     <div className="team-info">
-      <div className="team-info-top">
-        <h2>Team: {team}</h2>
-        <h3>Scouted Matches:</h3>
-        <h3>Scouters: </h3>
+      <div className="team-info-left">
+        <div className="title">
+          <h3>Scouting:</h3>
+        </div>
+        <h4>Scouted Matches: {teamInfo.matches.map((match) => "Match " + match[KEYS.MatchNum] + ", ")}</h4>
+        <p>Scouters: {teamInfo.matches.map((match) => match[KEYS.ScouterName] + ", ")}</p>
       </div>
-      <div className="team-info-bottom">
-        <h3>Comments:</h3>
-        TODO: ADD NOTES AND OTHER INFO
+      <div className="team-info-right">
+        <div className="title">
+          <h3>Comments:</h3>
+        </div>
+        <div className={"team-info-right-comments"}>
+          {teamInfo.matches.map((match) => (
+            <div className="team-info-right-comments-match">
+              <h4>Match: {match[KEYS.MatchNum]}</h4>
+              <p>Scouter: {match[KEYS.ScouterName]}</p>
+              <p>Comments: {(match[KEYS.Comments] == "")? "None": match[KEYS.Comments]}</p>
+            </div>
+          )
+          )}
+        </div>
       </div>
     </div>
   )
