@@ -222,6 +222,7 @@ button:hover {
   grid-template-columns: 1fr 1fr 1fr;
   justify-content: center;
   width: 100%;
+  overflow-y: auto;
 }
 .pick-list-page-lists {
   display: grid;
@@ -235,10 +236,19 @@ button:hover {
 
 .pick-list-page-list {
   background-color: var(--primary-color-hover);
+  transition: .2s all;
 }
 
 .pick-list {
   width: 80%;
+}
+
+.enabled {
+  border: .1rem solid #61dafb;
+}
+
+.disabled {
+  opacity: .5;
 }
 
 .pick-list-item {
@@ -249,15 +259,36 @@ button:hover {
   position: relative;
 }
 
-.pick-list-item p {
+.pick-list-item input {
+  border: none;
+  padding: 0;
+  max-width: 2.5vw;
   position: absolute;
-  left: 10%;
-  top: 10%;
+  left: 0;
   margin: 0;
 }
 
-.pick-list-item:hover {
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.pick-list-item h4 {
+  position: absolute;
+  right: 0.5rem;
+  top: 0.15rem;
+  margin: 0;
+}
+
+.pick-list-item h4:hover {
   color: var(--secondary-color-hover);
+
 }
 
 .team-page-graph-auto, .team-page-graph-tele, .team-page-graph-end, .pick-list-page-list {
@@ -276,7 +307,7 @@ button:hover {
 
 .charts-wrapper {
   width: 100%;
-  height: 70vh;
+  /* height: 70vh; */
   display: grid;
   gap: 5%;
   text-align: center;

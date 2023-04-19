@@ -2,12 +2,13 @@ import react from "react";
 import { useState, useContext } from "react";
 import papa from "papaparse";
 import { SDContext } from "../library/scoutingData";
-import {AutoPie, ChartTool, TrendGraph} from "./charts/ChartTool";
+import {AutoPie, ChartTool, DoughnutChartTool, TrendGraph} from "./charts/ChartTool";
 import WiredBoar from "../assets/WiredBoar.png";
 import compileData from "../library/dataCompiler";
 import BarChart from "./charts/BarChart";
 import { useDrag, useDrop } from "react-dnd";
 import {KEYS, SCALER} from "../library/dataKeys";
+import average from "../library/dataAverageTool";
 
 function Header({onButton}) {
   return (
@@ -30,28 +31,6 @@ function Header({onButton}) {
   );
 }
 
-function average(arr, key) {
-  let sum = 0;
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i][key] === "TRUE") {
-      //console.log(arr[i][key])
-      sum += 1;
-    }
-    else if (arr[i][key] === "FALSE") {
-      //console.log(arr[i][key])
-      sum += 0;
-    }
-    else if (arr[i][key] === "null") {
-      sum += 0;
-    }
-    else {
-    sum += parseInt(arr[i][key]);
-    }
-  }
-  let ave = sum / arr.length;
-  return parseFloat(ave.toFixed(2));
-  
-}
 
 function totalTelePoints(arr) {
   let TeleHigh = (average(arr, KEYS.Teleop.HighCone) + average(arr, KEYS.Teleop.HighCube)) * SCALER.Teleop.High
@@ -189,9 +168,32 @@ function AutoGraph({ team }) {
     KEYS.Auto.ChargingStation.Engaged,
   ];
   const total = ["TotalAuto"];
+
+  const plugins = {
+    legend: {
+      display: true,
+    },
+    title: {
+      display: true,
+      text: "Ave. Auto",
+    },
+  }
+
+  const rscale = {
+    r: {
+      suggestedMax: 3,
+      grid: {
+        color: 'rgba(0, 0, 0, 0.1)',
+      },
+      ticks: {
+        display: false,
+      },
+    },
+  };
+
   return (
     <div className="charts-wrapper">
-      <AutoPie team={team} labels={autoLabels} data={autoData} title={"Ave. Auto"}/>
+      <AutoPie team={team} labels={autoLabels} data={autoData} scale={rscale} plugins={plugins}/>
       {/* <ChartTool team={team} labels={total} chartType={"bar"}/> */}
     </div>
   );
@@ -215,12 +217,49 @@ function TeleGraph({ team }) {
     KEYS.Teleop.LowCone,
     KEYS.Teleop.LowCube,
   ];
-  const total = ["TotalTele"];
+
+  const driverLabels = [
+    "Driving Skill",
+    "Defensive Skill",
+  ]
+
+  const driverData =[
+    KEYS.Rating.Driver,
+    KEYS.Rating.Defense,
+  ]
+
+  const dscale = {
+    r: {
+      ticks: {
+        display: false,
+      },
+    }
+  }
 
   const rscale = {
     r: {
-      suggestedMax: 6,
+      suggestedMin: 6,
+      suggestedMax: 10,
+      grid: {
+        color: 'blue'
+    },
+    angleLines: {
+        color: 'red'
+    },
+    ticks: {
+      stepSize: 2,
+    },
     }
+  }
+
+  const rplugins = {
+    legend: {
+      display: false,
+    },
+    title: {
+      display: true,
+      text: 'Ave. Tele',
+    },
   }
 
   const bscale = {
@@ -233,7 +272,9 @@ function TeleGraph({ team }) {
 
   return (
     <div className="charts-wrapper">
-      <ChartTool team={team} labels={teleLabels} data={teleData} scale={rscale} chartType={"radar"}/>
+      <ChartTool team={team} labels={teleLabels} data={teleData} scale={rscale} plugins={rplugins} chartType={"radar"}/>
+      <DoughnutChartTool team={team} labels={teleLabels} data={teleData} title={"Ave. Tele"}/>
+      <ChartTool team={team} labels={driverLabels} data={driverData} scale={dscale} chartType={"bar"} />
       {/* <ChartTool team={team} labels={total} scale={bscale} chartType={"bar"}/> */}
     </div>
   );
@@ -252,15 +293,34 @@ function EndGraph({ team }) {
     KEYS.Endgame.ChargingStation.Engaged,
     KEYS.Endgame.Parked
   ];
-  const trend = ["TotalAuto", "TotalTele", "Charging Station", "TotalPieces"]
+  const trend = ["TotalAuto", "TotalTele", "Charging Station"]
   return (
     <div className="charts-wrapper">
-        <ChartTool team={team} labels={endLabels} data={endData} chartType={"radar"} />
+        TODO: ADD NOTHING TABLE TO CHART.
+        <DoughnutChartTool team={team} labels={endLabels} data={endData} title={"Ave. Endgame"} />
+        {/* <ChartTool team={team} labels={endLabels} data={endData} chartType={"radar"} /> */}
         {/* <TrendGraph team={team} label={"Match Num"} targets={trend} title={"Total Trend"}/> */}
     </div>
     );
 }
 
+function TeamInfo({ team }) {
+  const [scoutingData] = useContext(SDContext);
+
+  return (
+    <div className="team-info">
+      <div className="team-info-top">
+        <h2>Team: {team}</h2>
+        <h3>Scouted Matches:</h3>
+        <h3>Scouters: </h3>
+      </div>
+      <div className="team-info-bottom">
+        <h3>Comments:</h3>
+        TODO: ADD NOTES AND OTHER INFO
+      </div>
+    </div>
+  )
+}
 function TeamPage() {
   const [scoutingData] = useContext(SDContext);
   let [team, setTeam] = useState(0);
@@ -281,6 +341,10 @@ function TeamPage() {
         <h2>Team: {team}</h2>
         <TeamList onTeam={onTeamSelect} />
       </div>
+      <div className="team-page-info">
+      <div className="team-page-info-top">
+        <TeamInfo team={team} />
+      </div>
       <div className="team-page-graph">
         <div className="team-page-graph-auto">
           <h3>Auto</h3>
@@ -295,28 +359,34 @@ function TeamPage() {
           <EndGraph team={team} />
         </div>
       </div>
+      </div>
     </div>
   );
 }
 
-function PickListItem({item, num, Click}){
+function PickListItem({item, num, Click, input}){
 
+    let inn =  num + 1;
 
     return (
-        <div key={num} rank={num} team={item} onClick={Click} className="pick-list-item">
-            <p>{num + 1}</p>
+        <div key={num} rank={num} team={item} className="pick-list-item">
+            {/* <p>{num + 1}</p> */}
+            <input type={"Number"} onChange={input} min={1} max={20} placeholder={inn}/>
             <h3>{item}</h3>
+            <h4 onClick={Click} team={item}>X</h4>
         </div>
     ) 
 }
 
-function PickList({list, Click}) {
+function PickList({list, Click, input}) {
+    let classNames = "pick-list"
+
 
     return (
-        <div className="pick-list">
+        <div className={classNames}>
             {list.length == 0 ? <h3>Empty</h3> : null}
             {list.map((item, i) => (
-                <PickListItem item={item} Click={Click} num={i}/>
+                <PickListItem item={item} input={input} Click={Click} num={i}/>
             ))}
 
         </div>
@@ -328,54 +398,110 @@ function PickListPage() {
     const [listOne, setListOne] = useState([])
     const [listTwo, setListTwo] = useState([])
     
+    const [listSelector, setListSelector] = useState(1)
 
-    function addToListOne(e){
+    const [classListOne, setClassListOne] = useState("pick-list-page-list enabled")
+    const [classListTwo, setClassListTwo] = useState("pick-list-page-list disabled")
+
+
+
+    function selectListOne() {
+      setListSelector(1)
+      setClassListOne("pick-list-page-list enabled")
+      setClassListTwo("pick-list-page-list disabled")
+    }
+
+    function selectListTwo() {
+      setListSelector(2)
+      setClassListTwo("pick-list-page-list enabled")
+      setClassListOne("pick-list-page-list disabled")
+    }
+
+    function addToList(e){
         console.log(e.currentTarget)
+        let tempList
+        if (listSelector == 1) {
+            tempList = listOne
+        } else {
+            tempList = listTwo
+        }
+        if (tempList.length >= 20) {
+            return;
+        }
         if (e.currentTarget.getAttribute("team") === null) {
             return;
         }
-        if(listOne.includes(e.currentTarget.getAttribute("team"))){
+        if(tempList.includes(e.currentTarget.getAttribute("team"))){
             return;
         }
-        setListOne([...listOne, e.currentTarget.getAttribute("team")])
-        console.log(listOne)
+        if (listSelector == 1) {
+            setListOne([...tempList, e.currentTarget.getAttribute("team")])
+            console.log(listOne)
+        } else {
+            setListTwo([...tempList, e.currentTarget.getAttribute("team")])
+            console.log(listTwo)
+        }
     }
 
-    function deleteFromListOne(e){
+    function reOrderList(e) {
+      e.preventDefault();
+      console.log(e.currentTarget.value)
+      console.log(e.currentTarget.parentNode.getAttribute("rank"))
+      // reorder list acording to input value
+      let newList 
+      if (listSelector == 1) {
+        newList = listOne
+      } else {
+        newList = listTwo
+      }
+      let item = newList.splice(e.currentTarget.parentNode.getAttribute("rank"), 1);
+      newList.splice(e.currentTarget.value - 1, 0, item[0]);
+      console.log(newList)
+      e.currentTarget.value = "";
+      if (listSelector == 1) {
+        setListOne([...newList]);
+      } else {
+        setListTwo([...newList]);
+      }
+    }
+
+    function deleteFromList(e){
         //removes item from list using team name
         console.log(e.currentTarget)
         if (e.currentTarget.getAttribute("team") === null) {
             return;
         }
-        let newList = listOne.filter((item) => item != e.currentTarget.getAttribute("team"))
-        setListOne(newList)
+        let newList
+        if (listSelector == 1) {
+            newList = listOne.filter((item) => item != e.currentTarget.getAttribute("team"))
+        } else {
+            newList = listTwo.filter((item) => item != e.currentTarget.getAttribute("team"))
+        }
+        if (listSelector == 1) {
+            setListOne(newList)
+        } else {
+            setListTwo(newList)
+        }
         
 
 
     }
 
-    function addToListTwo(e){
-
-    }
-
-    function deleteFromListTwo(e){
-
-    }
 
     return (
         <div className="pick-list-page">
             <div className="team-page-list">
                 <h2>Team List</h2>
-                <TeamList onTeam={addToListOne}/>
+                <TeamList onTeam={addToList}/>
             </div>
             <div className="pick-list-page-lists">
-                <div className="pick-list-page-list">
+                <div className={classListOne} onClick={selectListOne}>
                     <h3>1st Pick List</h3>
-                    <PickList list={listOne} Click={deleteFromListOne}/>
+                    <PickList list={listOne}  input={reOrderList} Click={deleteFromList}/>
                 </div>
-                <div className="pick-list-page-list">
+                <div className={classListTwo} onClick={selectListTwo}>
                     <h3>2nd Pick List</h3>
-                    <PickList list={listTwo}/>
+                    <PickList list={listTwo}  input={reOrderList} Click={deleteFromList}/>
                 </div>
             </div>
         </div>

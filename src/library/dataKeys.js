@@ -7,7 +7,7 @@ export const KEYS = {
   comments: "Comments",
   Rating: {
     Driver: "Driver Rating",
-    Defence: "Defence Rating",
+    Defense: "Defense Rating",
   },
   Auto: {
     HighCone: "A-T-Cone",

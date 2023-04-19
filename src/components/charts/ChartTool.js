@@ -7,6 +7,8 @@ import PolarAreaChart from './PolarAreaChart';
 import { SDContext } from '../../library/scoutingData';
 import { useContext } from 'react';
 import { KEYS } from '../../library/dataKeys';
+import average from '../../library/dataAverageTool';
+
 
 
 function ChartPicker({chartType, data, options}) {
@@ -22,7 +24,7 @@ function ChartPicker({chartType, data, options}) {
     }
 }
 
-export function ChartTool({team, labels, data, chartType, title, scale}) {
+export function ChartTool({team, labels, data, chartType, plugins, scale}) {
     if (!data || data == []) {
         data = labels
     }
@@ -46,34 +48,31 @@ export function ChartTool({team, labels, data, chartType, title, scale}) {
         labels: labels,
         datasets: match_datasets
     }
-    let plugins = {}
-    if (title){
-        plugins = {
-            title: {
-                display: true,
-                text: title || undefined,
-            }
+    let pluginOptions = {
+        legend: {
+            display: false,
         }
     }
-    let scaleOption
+    if (plugins){
+        pluginOptions = plugins
+    }
+    let scaleOption = {
+        r: {
+        grid: {
+            color: 'blue'
+        },
+        angleLines: {
+            color: 'red'
+        },
+    },
+    }
     if (scale){
         scaleOption = scale
-    } else {
-        scaleOption = {
-            r: {
-            grid: {
-                color: 'blue'
-            },
-            angleLines: {
-                color: 'red'
-            },
-        },
-        }
     }
 
     let options = {
         responsive: true,
-        plugins,
+        plugins: pluginOptions,
         scales: scaleOption,
     }
 
@@ -122,23 +121,65 @@ export function TrendGraph({ team, label, targets, title }) {
     )
 }
 
-export function AutoPie({ team, labels, data, title}) {
+export function DoughnutChartTool({ team, labels, data, title}) {
+    
+    if(!data || data == []) {
+        data = labels
+    }
+        
+    const [scoutingData] = useContext(SDContext);
+    let index = scoutingData.findIndex((teamData) => teamData.team == team)
+    let dataset = []
+    for (let i = 0; i < labels.length; i++) {
+        dataset.push(average(scoutingData[index].matches, data[i]))
+    }
+    const chartData = {
+        labels: labels,
+        datasets: [{
+            label: "Tele",
+            data: dataset,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    }
+    const options = {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: title || "Auto",
+            }
+        }
+    }
+        return (
+            <div className="chart-container">
+                <DoughnutChart data={chartData} options={options} />
+            </div>
+        )
+}
+
+
+export function AutoPie({ team, labels, data, plugins, scale}) {
     
     if(!data || data == []) {
         data = labels
     }
     
-    function average(arr, key) {
-    
-        let sum = 0;
-        for (let i = 0; i < arr.length; i++) {
-          sum += parseInt(arr[i][key]);
-        }
-        let ave = sum / arr.length;
-        //console.log(key, ave.toFixed(2))
-        return parseFloat(ave.toFixed(2));
-        
-      }
     
     const [scoutingData] = useContext(SDContext);
     let index = scoutingData.findIndex((teamData) => teamData.team == team)
@@ -170,14 +211,32 @@ export function AutoPie({ team, labels, data, title}) {
             borderWidth: 1
         }]
     }
-    const options = {
-        responsive: true,
-        plugins: {
-            title: {
-                display: true,
-                text: title || "Auto",
-            }
+    let pluginOptions = {
+        legend: {
+            display: false,
         }
+    }
+    if (plugins){
+        pluginOptions = plugins
+    }
+    let scaleOption = {
+        r: {
+        grid: {
+            color: 'blue'
+        },
+        angleLines: {
+            color: 'red'
+        },
+    },
+    }
+    if (scale){
+        scaleOption = scale
+    }
+
+    let options = {
+        responsive: true,
+        plugins: pluginOptions,
+        scales: scaleOption,
     }
         return (
             <div className="chart-container">
