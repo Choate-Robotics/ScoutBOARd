@@ -1,24 +1,42 @@
 import react from "react";
 import { useState, useContext } from "react";
 import papa from "papaparse";
-import { SDRContext } from "../library/scoutingData";
+import { SDRContext, PSContext } from "../library/scoutingData";
 import  compileData  from "../library/dataCompiler";
 import RadarChart from "./charts/RadarChart";
 
 export function TitleScreen() {
   const [ScoutingDataRaw, setScoutingDataRaw] = useContext(SDRContext);
+  const [PitScoutingData, setPitScoutingData] = useContext(PSContext);
 
-  const uploadCSV = (event) => {
-    const file = event.target.files[0];
-    papa.parse(file, {
+  const uploadCSV = (e) => {
+    e.preventDefault();
+
+    const files = [
+      document.getElementById("sdfile").files[0],
+      document.getElementById("pitfile").files[0],
+    ]
+    papa.parse(files[0], {
       header: true,
       skipEmptyRows: true,
       complete: function (results) {
-        console.log("Parsed csv", results.data);
+        console.log("Parsed Scouting Data csv", results.data);
         setScoutingDataRaw(results.data);
       },
       error: function (error) {
-        console.log("Error parsing csv", error);
+        console.log("Error parsing Scouting Data csv", error);
+      },
+    });
+
+    papa.parse(files[1], {
+      header: true,
+      skipEmptyRows: true,
+      complete: function (results) {
+        console.log("Parsed Pit Scouting csv", results.data);
+        setPitScoutingData(results.data);
+      },
+      error: function (error) {
+        console.log("Error parsing Pit Scouting csv", error);
       },
     });
   };
@@ -33,7 +51,18 @@ export function TitleScreen() {
           Robotics Competition.
         </p>
         <p>To get started, click the "Upload Data" button below.</p>
-        <input type="file" id="file" accept=".csv" placeholder="Scouting Data" onChange={uploadCSV} />
+        <form onSubmit={uploadCSV}>
+          <label for="pitfile">
+            Pit Scouting
+            <input type="file" id="pitfile" className={"custom-file-input"} accept=".csv" placeholder="Scouting Data" />
+          </label>
+          <br />
+          <label for="sdfile">
+            Scouting Data
+            <input type="file" id="sdfile" className={"custom-file-input"} accept=".csv" placeholder="Pit Scouting" /> 
+          </label>
+          <input type="submit" value="Lets Get Started!" />
+        </form>
       </div>
     </div>
   );

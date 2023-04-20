@@ -92,7 +92,7 @@ export function ChartTool({team, labels, data, chartType, plugins, scale}) {
     )
 }
 
-export function TrendGraph({ team, labels, targets, title, stacked, axis }) {
+export function TrendGraph({ team, labels, targets, title, multiply, stacked, axis }) {
     const [scoutingData] = useContext(SDContext);
     let match_datasets = []
     let index = scoutingData.findIndex((teamData) => teamData.team == team)
@@ -101,17 +101,17 @@ export function TrendGraph({ team, labels, targets, title, stacked, axis }) {
     for (let i = 0; i < targets.length; i++) {
         let data = scoutingData[index].matches.map((match) => {
             if(match[targets[i]] == "TRUE") {
-                return 1
+                return 1 * multiply[i]
             } else if (match[targets[i]] == "FALSE") {
                 return 0
             } else if (match[targets[i]] == "null") {
                 return 0
             } else {
-                return match[targets[i]]
+                return match[targets[i]] * multiply[i]
             }
         })
         let dataset = {
-            label: targets[i],
+            label: labels[i],
             data: data,
             tension: 0.1
         }

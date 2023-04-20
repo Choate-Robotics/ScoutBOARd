@@ -3,7 +3,7 @@ import "./App.css";
 // import papa from "papaparse";
 import { SDContext, SDRContext } from "./library/scoutingData";
 import { useState, useContext } from "react";
- import { SDProvider, SDRProvider, IKProvider } from "./library/scoutingData";
+ import { SDProvider, SDRProvider, IKProvider, PSProvider } from "./library/scoutingData";
 import {TitleScreen, Person, Robots} from "./components/general";
 import compileData from "./library/dataCompiler";
 import {ScoutPage} from "./components/scoutPage";
@@ -32,7 +32,9 @@ function App() {
     <SDProvider>
     <IKProvider>
     <SDRProvider>
+    <PSProvider>
       <SiteController />
+    </PSProvider>
     </SDRProvider>
     </IKProvider>
     </SDProvider>

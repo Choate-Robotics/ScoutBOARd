@@ -39,6 +39,19 @@ export const KEYS = {
     },
     Parked: "Parked",
   },
+  Pit: {
+    Timestamp: "Timestamp",
+    EmailAddress: "Email Address",
+    TeamNum: "Team Number",
+    Autos: "What are your auto routes?(Ask them about starting position, cubes scored, cones scored, dock and/or engage?)",
+    Intaking: "What level can your robot intake at? (don’t ask for drivetrain bots)",
+    Weight: "What's the weight of the robot(>than 100 lbs excluding bumper and battery)",
+    DriveTrain: "Drivetrain type",
+    Help: "Do they need help with their robot (ex mechanical, electrical, programming)?",
+    Style: "What is your robot's preferred playing style?",
+    Extra: "Is there anything cool about your robot that you want to tell us?",
+    Picture: "Take a picture of the robot",
+  }
 };
 
 export const SCALER = {

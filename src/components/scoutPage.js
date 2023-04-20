@@ -167,6 +167,19 @@ function AutoGraph({ team }) {
     KEYS.Auto.ChargingStation.Docked,
     KEYS.Auto.ChargingStation.Engaged,
   ];
+
+  const autoDataMultiply = [
+    SCALER.Auto.High,
+    SCALER.Auto.High,
+    SCALER.Auto.Mid,
+    SCALER.Auto.Mid,
+    SCALER.Auto.Low,
+    SCALER.Auto.Low,
+    SCALER.Auto.Mobility,
+    SCALER.Auto.ChargingStation.Docked,
+    SCALER.Auto.ChargingStation.Engaged
+  ]
+
   const total = ["TotalAuto"];
 
   const plugins = {
@@ -204,7 +217,7 @@ function AutoGraph({ team }) {
   return (
     <div className="charts-wrapper">
       <AutoPie team={team} labels={autoLabels} data={autoData} scale={rscale} plugins={plugins}/>
-      <TrendGraph team={team} labels={autoLabels} targets={autoData} stacked={true} axis={'y'} />
+      <TrendGraph team={team} labels={autoLabels} targets={autoData} multiply={autoDataMultiply} stacked={true} axis={'y'} />
     </div>
   );
 }
@@ -226,6 +239,15 @@ function TeleGraph({ team }) {
     KEYS.Teleop.MidCube,
     KEYS.Teleop.LowCone,
     KEYS.Teleop.LowCube,
+  ];
+
+  const teleDataMultiply = [
+    SCALER.Teleop.High,
+    SCALER.Teleop.High,
+    SCALER.Teleop.Mid,
+    SCALER.Teleop.Mid,
+    SCALER.Teleop.Low,
+    SCALER.Teleop.Low,
   ];
 
   const driverLabels = [
@@ -282,7 +304,8 @@ function TeleGraph({ team }) {
 
   return (
     <div className="charts-wrapper">
-      <ChartTool team={team} labels={teleLabels} data={teleData} scale={rscale} plugins={rplugins} chartType={"radar"}/>
+      <TrendGraph team={team} labels={teleLabels} targets={teleData} multiply={teleDataMultiply} stacked={true} />
+      {/* <ChartTool team={team} labels={teleLabels} data={teleData} scale={rscale} plugins={rplugins} chartType={"radar"}/> */}
       <DoughnutChartTool team={team} labels={teleLabels} data={teleData} title={"Ave. Tele"}/>
       <ChartTool team={team} labels={driverLabels} data={driverData} scale={dscale} chartType={"bar"} />
       {/* <ChartTool team={team} labels={total} scale={bscale} chartType={"bar"}/> */}
@@ -328,6 +351,14 @@ function TeamInfo({ team }) {
         </div>
         <h4>Scouted Matches: {teamInfo.matches.map((match) => "Match " + match[KEYS.MatchNum] + ", ")}</h4>
         <p>Scouters: {teamInfo.matches.map((match) => match[KEYS.ScouterName] + ", ")}</p>
+      </div>
+      <div className="team-info-middle">
+        <div className="title">
+          <h3>Team Info:</h3>
+        </div>
+        <p>Team Number: {team}</p>
+        <p>Defense Bot: {defense}</p>
+        <p>Autos: {teamInfo[KEYS.Pit.Autos]}</p>
       </div>
       <div className="team-info-right">
         <div className="title">

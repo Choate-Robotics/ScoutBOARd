@@ -12,6 +12,18 @@ export const SDRProvider = ({ children }) => {
   );
 };
 
+export const PSContext = createContext();
+
+export const PSProvider = ({ children }) => {
+  const [PitScoutingData, setPitScoutingData] = useState([]);
+  
+  return (
+    <PSContext.Provider value={[PitScoutingData, setPitScoutingData]}>
+      {children}
+    </PSContext.Provider>
+  );
+};
+
 export const SDContext = createContext();
 
 export const SDProvider = ({ children }) => {
