@@ -1,7 +1,7 @@
 import react from "react";
 import { useState, useContext } from "react";
 import papa from "papaparse";
-import { SDContext } from "../library/scoutingData";
+import { SDContext, PSContext } from "../library/scoutingData";
 import {AutoPie, ChartTool, DoughnutChartTool, TrendGraph} from "./charts/ChartTool";
 import WiredBoar from "../assets/WiredBoar.png";
 import compileData from "../library/dataCompiler";
@@ -154,6 +154,7 @@ function AutoGraph({ team }) {
     "Mobility",
     "Docked",
     "Engaged",
+    "Failed Balance"
   ];
   
   const autoData = [
@@ -166,6 +167,7 @@ function AutoGraph({ team }) {
     KEYS.Auto.Mobility,
     KEYS.Auto.ChargingStation.Docked,
     KEYS.Auto.ChargingStation.Engaged,
+    KEYS.Auto.ChargingStation.FailedBalance
   ];
 
   const autoDataMultiply = [
@@ -177,7 +179,8 @@ function AutoGraph({ team }) {
     SCALER.Auto.Low,
     SCALER.Auto.Mobility,
     SCALER.Auto.ChargingStation.Docked,
-    SCALER.Auto.ChargingStation.Engaged
+    SCALER.Auto.ChargingStation.Engaged,
+    -12,
   ]
 
   const total = ["TotalAuto"];
@@ -326,11 +329,35 @@ function EndGraph({ team }) {
     KEYS.Endgame.ChargingStation.Engaged,
     KEYS.Endgame.Parked
   ];
+
+  const endDataMultiply = [
+    SCALER.Endgame.ChargingStation.Docked,
+    SCALER.Endgame.ChargingStation.Engaged,
+    SCALER.Endgame.Parked,
+    -1,
+  ];
+
+  const endPLabels = [
+    "Docked",
+    "Engaged",
+    "Parked",
+    "Failed",
+  ]
+  
+  const endPData = [
+    KEYS.Endgame.ChargingStation.Docked,
+    KEYS.Endgame.ChargingStation.Engaged,
+    KEYS.Endgame.Parked,
+    KEYS.Endgame.ChargingStation.FailedBalance,
+  ];
+
+
   const trend = ["TotalAuto", "TotalTele", "Charging Station"]
   return (
     <div className="charts-wrapper">
         {/* TODO: ADD NOTHING TABLE TO CHART. */}
-        <DoughnutChartTool team={team} labels={endLabels} data={endData} title={"Ave. Endgame"} />
+        <TrendGraph team={team} labels={endPLabels} targets={endPData} multiply={endDataMultiply} stacked={true} />
+        <DoughnutChartTool team={team} labels={endPLabels} data={endPData} title={"Ave. Endgame"} />
         {/* <ChartTool team={team} labels={endLabels} data={endData} chartType={"radar"} /> */}
         {/* <TrendGraph team={team} label={"Match Num"} targets={trend} title={"Total Trend"}/> */}
     </div>
@@ -339,8 +366,12 @@ function EndGraph({ team }) {
 
 function TeamInfo({ team }) {
   const [scoutingData] = useContext(SDContext);
+  const [PitScoutingData] = useContext(PSContext);
 
   let teamInfo = scoutingData.filter((match) => match.team === team)[0] || {matches: []};
+  
+  let pitInfo = PitScoutingData.filter((data) => data["Team number"] === team)[0] || {};
+  console.log("pit Data", pitInfo)
 
   let defense = (average(teamInfo.matches, KEYS.DefenseBot) > 0.5) ? "Yes" : "No";
   return (
@@ -358,7 +389,17 @@ function TeamInfo({ team }) {
         </div>
         <p>Team Number: {team}</p>
         <p>Defense Bot: {defense}</p>
-        <p>Autos: {teamInfo[KEYS.Pit.Autos]}</p>
+        <p>Autos: {pitInfo[KEYS.Pit.Autos]}</p>
+        <p>Weight: {pitInfo[KEYS.Pit.Weight]}</p>
+        <p>Dimensions: {pitInfo[KEYS.Pit.Dimensions]}</p>
+        <p>Drivetrain: {pitInfo[KEYS.Pit.Drivetrain]} </p>
+        <p>Clearance: {pitInfo[KEYS.Pit.Clearance]}</p>
+        <p>Intaking: {pitInfo[KEYS.Pit.Intaking]}</p>
+        <p>Playing Style: {pitInfo[KEYS.Pit.Style]}</p>
+        <p>Extra: {pitInfo[KEYS.Pit.Extra]}</p>
+        <p>Image: </p>
+        <a href={pitInfo[KEYS.Pit.Picture]} target={"_blank"}>Image</a>
+
       </div>
       <div className="team-info-right">
         <div className="title">

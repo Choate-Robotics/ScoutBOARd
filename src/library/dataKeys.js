@@ -14,13 +14,14 @@ export const KEYS = {
     HighCone: "Auto Top Cone",
     MidCone: "Auto Mid Cone",
     LowCone: "Auto Low Cone",
-    HighCube: "Auto Low Cube",
+    HighCube: "Auto Top Cube",
     MidCube: "Auto Mid Cube",
     LowCube: "Auto Low Cube",
     Mobility: "Left Community",
     ChargingStation: {
       Docked: "Auto Dock",
       Engaged: "Auto Dock & Engage",
+      FailedBalance: "Auto Failed Balance",
     },
   },
   Teleop: {
@@ -36,6 +37,7 @@ export const KEYS = {
     ChargingStation: {
       Docked: "Teleop Dock",
       Engaged: "Teleop Dock & Engage",
+      FailedBalance: "Teleop Failed Balance",
     },
     Parked: "Parked",
   },
@@ -43,10 +45,12 @@ export const KEYS = {
     Timestamp: "Timestamp",
     EmailAddress: "Email Address",
     TeamNum: "Team Number",
+    Dimensions: "What are the dimensions of your robot?",
     Autos: "What are your auto routes?(Ask them about starting position, cubes scored, cones scored, dock and/or engage?)",
     Intaking: "What level can your robot intake at? (don’t ask for drivetrain bots)",
     Weight: "What's the weight of the robot(>than 100 lbs excluding bumper and battery)",
-    DriveTrain: "Drivetrain type",
+    Drivetrain: "Drivetrain type",
+    Clearance: "What’s the ground clearance of robot?",
     Help: "Do they need help with their robot (ex mechanical, electrical, programming)?",
     Style: "What is your robot's preferred playing style?",
     Extra: "Is there anything cool about your robot that you want to tell us?",
@@ -57,8 +61,8 @@ export const KEYS = {
 export const SCALER = {
   Auto: {
     High: 6,
-    Mid: 5,
-    Low: 4,
+    Mid: 4,
+    Low: 3,
     Mobility: 3,
     ChargingStation: {
       Docked: 8,
@@ -67,8 +71,8 @@ export const SCALER = {
   },
   Teleop: {
     High: 5,
-    Mid: 4,
-    Low: 3,
+    Mid: 3,
+    Low: 2,
   },
   Endgame: {
     ChargingStation: {
