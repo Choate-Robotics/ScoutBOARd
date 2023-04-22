@@ -30,12 +30,12 @@ export const KEYS = {
     HighCube: "Teleop Top Cube",
     MidCube: "Teleop Mid Cube",
     LowCube: "Teleop Low Cube",
-    overChargeStation: "Pass Station",
+    overChargeStation: "Pass Driver Station",
   },
   Endgame: {
     ChargingStation: {
-      Docked: "T-Dock",
-      Engaged: "T-Dock-E",
+      Docked: "Teleop Dock",
+      Engaged: "Teleop Dock & Engage",
     },
     Parked: "Parked",
   },
