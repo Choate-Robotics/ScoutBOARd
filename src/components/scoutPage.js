@@ -22,8 +22,8 @@ function Header({onButton}) {
         </div>
         <div className="header-divisions-buttons">
           <button value={"Teams"} onClick={onButton} className="header-division-button">Teams</button>
-          <button value={"Graph"} onClick={onButton} className="header-division-button">Graph</button>
-          <button value={"Compare"} onClick={onButton} className="header-division-button">Compare</button>
+          {/* <button value={"Graph"} onClick={onButton} className="header-division-button">Graph</button>
+          <button value={"Compare"} onClick={onButton} className="header-division-button">Compare</button> */}
           <button value={"Lists"} onClick={onButton} className="header-division-button">Pick Lists</button>
         </div>
       </div>
@@ -574,16 +574,16 @@ function Body({current}) {
                 <TeamPage />
                 </div>
             );
-        case "Graph":
-            return (
-                <div className="body">
-                </div>
-            )
-        case "Compare":
-            return (
-                <div className="body">
-                </div>
-            )
+        // case "Graph":
+        //     return (
+        //         <div className="body">
+        //         </div>
+        //     )
+        // case "Compare":
+        //     return (
+        //         <div className="body">
+        //         </div>
+        //     )
         case "Lists":
             return (
                 <div className="body">

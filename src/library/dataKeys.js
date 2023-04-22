@@ -4,7 +4,7 @@ export const KEYS = {
   AllianceColor: "Alliance",
   DefenseBot: "Defense Bot",
   DidFoul: "Did Foul",
-  ScouterName: "Scouter Name",
+  ScouterName: "Scout Name",
   Comments: "Comments",
   Rating: {
     Driver: "Driver Rating",
