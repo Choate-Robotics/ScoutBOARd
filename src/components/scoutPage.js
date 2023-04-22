@@ -329,7 +329,7 @@ function EndGraph({ team }) {
   const trend = ["TotalAuto", "TotalTele", "Charging Station"]
   return (
     <div className="charts-wrapper">
-        TODO: ADD NOTHING TABLE TO CHART.
+        {/* TODO: ADD NOTHING TABLE TO CHART. */}
         <DoughnutChartTool team={team} labels={endLabels} data={endData} title={"Ave. Endgame"} />
         {/* <ChartTool team={team} labels={endLabels} data={endData} chartType={"radar"} /> */}
         {/* <TrendGraph team={team} label={"Match Num"} targets={trend} title={"Total Trend"}/> */}
